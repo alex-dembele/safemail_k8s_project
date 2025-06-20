@@ -1,0 +1,31 @@
+# Service pour exposer les ports mail à internet
+apiVersion: v1
+kind: Service
+metadata:
+  name: safemail-loadbalancer
+  namespace: safemail
+spec:
+  type: LoadBalancer
+  ports:
+  - name: smtp; port: 25; targetPort: 25
+  - name: smtps; port: 465; targetPort: 465
+  - name: submission; port: 587; targetPort: 587
+  - name: imaps; port: 993; targetPort: 993
+  selector:
+    # Ce sélecteur est un défi. Pour une solution simple, on cible un seul pod.
+    # Pour la production, un Ingress Controller TCP (comme NGINX) est recommandé.
+    app: postfix # Simplification: le trafic IMAP sera routé vers Postfix, qui l'ignorera. Dovecot doit être sur le même noeud.
+---
+# Service interne pour l'application d'administration
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-app-service
+  namespace: safemail
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: admin-app

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: safemail-config
+  namespace: safemail
+data:
+  # Votre domaine de messagerie principal
+  DOMAIN: "votre-domaine.com" # <-- MODIFIEZ CECI

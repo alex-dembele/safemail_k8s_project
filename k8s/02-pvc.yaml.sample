@@ -1,0 +1,27 @@
+# Stockage pour les boîtes mail
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vmail-pvc
+  namespace: safemail
+spec:
+  accessModes:
+    # ReadWriteMany est idéal si vous prévoyez plusieurs réplicas.
+    # Sinon, ReadWriteOnce est suffisant.
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi # <-- MODIFIEZ LA TAILLE
+---
+# Stockage pour les certificats SSL/TLS
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: certbot-pvc
+  namespace: safemail
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

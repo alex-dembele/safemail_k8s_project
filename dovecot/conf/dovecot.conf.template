@@ -1,0 +1,11 @@
+protocols = imap lmtp
+listen = *, ::
+mail_location = maildir:/var/vmail/%d/%n
+ssl = required
+ssl_cert = </etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+ssl_key = </etc/letsencrypt/live/${DOMAIN}/privkey.pem
+auth_mechanisms = plain login
+passdb { driver = sql; args = /etc/dovecot/dovecot-sql.conf.ext; }
+userdb { driver = sql; args = /etc/dovecot/dovecot-sql.conf.ext; }
+service lmtp { unix_listener /var/spool/postfix/private/dovecot-lmtp { mode=0666 user=postfix group=postfix } }
+service auth { unix_listener /var/spool/postfix/private/auth { mode=0666 user=postfix group=postfix } }

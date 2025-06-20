@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postfix
+  namespace: safemail
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: postfix } }
+  template:
+    metadata: { labels: { app: postfix } }
+    spec:
+      containers:
+      - name: postfix
+        image: VOTRE_REGISTRY/safemail-postfix:latest # <-- MODIFIEZ CECI
+        ports:
+        - { containerPort: 25 }
+        - { containerPort: 465 }
+        - { containerPort: 587 }
+        envFrom:
+        - configMapRef: { name: safemail-config }
+        - secretRef: { name: nxh-database-secret } # <-- MODIFIEZ SI NÉCESSAIRE
+        volumeMounts:
+        - name: vmail-data
+          mountPath: /var/vmail
+        - name: certbot-data
+          mountPath: /etc/letsencrypt
+      volumes:
+      - name: vmail-data
+        persistentVolumeClaim: { claimName: vmail-pvc }
+      - name: certbot-data
+        persistentVolumeClaim: { claimName: certbot-pvc }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dovecot
+  namespace: safemail
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: dovecot } }
+  template:
+    metadata: { labels: { app: dovecot } }
+    spec:
+      containers:
+      - name: dovecot
+        image: VOTRE_REGISTRY/safemail-dovecot:latest # <-- MODIFIEZ CECI
+        ports:
+        - { containerPort: 143 }
+        - { containerPort: 993 }
+        envFrom:
+        - configMapRef: { name: safemail-config }
+        - secretRef: { name: nxh-database-secret } # <-- MODIFIEZ SI NÉCESSAIRE
+        volumeMounts:
+        - name: vmail-data
+          mountPath: /var/vmail
+        - name: certbot-data
+          mountPath: /etc/letsencrypt
+      volumes:
+      - name: vmail-data
+        persistentVolumeClaim: { claimName: vmail-pvc }
+      - name: certbot-data
+        persistentVolumeClaim: { claimName: certbot-pvc }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-app
+  namespace: safemail
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: admin-app } }
+  template:
+    metadata: { labels: { app: admin-app } }
+    spec:
+      containers:
+      - name: admin-app
+        image: VOTRE_REGISTRY/safemail-admin-app:latest # <-- MODIFIEZ CECI
+        ports:
+        - { containerPort: 8000 }
+        envFrom:
+        - secretRef: { name: nxh-database-secret } # <-- MODIFIEZ SI NÉCESSAIRE

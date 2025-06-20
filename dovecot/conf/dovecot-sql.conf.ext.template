@@ -1,0 +1,5 @@
+driver = mysql
+connect = host=${MYSQL_HOST} port=${MYSQL_PORT} dbname=${MYSQL_NAME} user=${MYSQL_USER} password=${MYSQL_PASSWORD}
+default_pass_scheme = ARGON2I
+password_query = SELECT email as user, password FROM virtual_users WHERE email='%u';
+user_query = SELECT email as user, '/var/vmail/%d/%n' as home, 2000 as uid, 2000 as gid FROM virtual_users WHERE email='%u';
