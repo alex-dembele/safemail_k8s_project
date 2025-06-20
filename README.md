@@ -7,13 +7,16 @@
    - Exécutez le script SQL 'db_init/init.sql' sur votre base de données RDS.
 
 2. Construisez et poussez vos images Docker :
-   export DOCKER_USER="votre_nom_dutilisateur_dockerhub" # ou votre registry
-   docker build -t ${DOCKER_USER}/safemail-postfix:latest ./postfix
-   docker build -t ${DOCKER_USER}/safemail-dovecot:latest ./dovecot
-   docker build -t ${DOCKER_USER}/safemail-admin-app:latest ./admin-app
-   docker push ${DOCKER_USER}/safemail-postfix:latest
-   docker push ${DOCKER_USER}/safemail-dovecot:latest
-   docker push ${DOCKER_USER}/safemail-admin-app:latest
+
+```
+export DOCKER_USER="votre_nom_dutilisateur_dockerhub" # ou votre registry
+docker build -t ${DOCKER_USER}/safemail-postfix:latest ./postfix
+docker build -t ${DOCKER_USER}/safemail-dovecot:latest ./dovecot
+docker build -t ${DOCKER_USER}/safemail-admin-app:latest ./admin-app
+docker push ${DOCKER_USER}/safemail-postfix:latest
+docker push ${DOCKER_USER}/safemail-dovecot:latest
+docker push ${DOCKER_USER}/safemail-admin-app:latest
+```
 
 3. Personnalisez les manifestes Kubernetes dans le dossier 'k8s/' :
    - Renommez tous les fichiers .yaml.sample en .yaml.
@@ -21,13 +24,16 @@
    - Dans '03-configmap.yaml.sample', définissez votre 'DOMAIN'.
 
 4. Créez votre secret Kubernetes (adaptez le nom du secret si besoin) :
-   kubectl create secret generic nxh-database-secret --namespace safemail \
-     --from-literal=NXH_DATABASE_HOST='...' \
-     --from-literal=NXH_DATABASE_PORT='...' \
-     --from-literal=NXH_DATABASE_NAME='...' \
-     --from-literal=NXH_DATABASE_USER='...' \
-     --from-literal=NXH_DATABASE_PASSWORD='...' \
-     --from-literal=NXH_FLASK_SECRET_KEY='une_cle_tres_longue_et_aleatoire'
+
+```
+kubectl create secret generic nxh-database-secret --namespace safemail \
+    --from-literal=NXH_DATABASE_HOST='...' \
+    --from-literal=NXH_DATABASE_PORT='...' \
+    --from-literal=NXH_DATABASE_NAME='...' \
+    --from-literal=NXH_DATABASE_USER='...' \
+    --from-literal=NXH_DATABASE_PASSWORD='...' \
+    --from-literal=NXH_FLASK_SECRET_KEY='une_cle_tres_longue_et_aleatoire'
+```
 
 5. Déployez l'application sur votre cluster :
    kubectl apply -f k8s/
